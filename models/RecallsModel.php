@@ -268,5 +268,44 @@ class RecallsModel extends BaseModel{
         return true;
     }
 
+    public function migrate()
+    {
+        $query = "
+                CREATE TABLE IF NOT EXISTS `recalls` (
+                `id` int(11) NOT NULL AUTO_INCREMENT,
+          `name` varchar(256) COLLATE utf8_bin NOT NULL,
+          `email` varchar(256) COLLATE utf8_bin NOT NULL,
+          `photo_path` varchar(256) COLLATE utf8_bin DEFAULT NULL,
+          `is_approved` tinyint(4) NOT NULL DEFAULT '0',
+          `is_moderated` tinyint(4) NOT NULL DEFAULT '0',
+          `text` text COLLATE utf8_bin NOT NULL,
+          PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1";
+        if (!$this->db->query($query)) {
+            return false;
+        }
+        $query = "CREATE TABLE IF NOT EXISTS `users` (
+                `id` int(11) NOT NULL AUTO_INCREMENT,
+          `name` varchar(256) COLLATE utf8_bin NOT NULL,
+          `password` varchar(256) COLLATE utf8_bin NOT NULL,
+          PRIMARY KEY (`id`)
+        ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1";
+
+
+        if (!$this->db->query($query)) {
+            return false;
+        }
+
+        $query = "INSERT INTO `users` (`id`, `name`, `password`) VALUES
+                    (1, 'admin', '202cb962ac59075b964b07152d234b70');";
+        if (!$this->db->query($query)) {
+            return false;
+        }
+
+        return true;
+    }
+
+
+
 
 }

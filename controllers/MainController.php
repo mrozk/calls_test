@@ -8,6 +8,7 @@ class MainController extends BaseController
     ];
 
 
+
     public function addAction()
     {
         $recalls = new RecallsModel();
@@ -33,4 +34,14 @@ class MainController extends BaseController
             'sort' => $sort
         ]);
     }
+
+    public function migrateAction()
+    {
+        // Оставляем открытым сугубо для теста
+        $rec = new RecallsModel();
+        if($rec->migrate()){
+            echo 'Successful migrated';
+        }
+    }
+
 }
