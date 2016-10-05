@@ -8,13 +8,12 @@ class MainController extends BaseController
     ];
 
 
-
     public function addAction()
     {
         $recalls = new RecallsModel();
-        if(!$recalls->addRecall($_POST, $_FILES)){
+        if (!$recalls->addRecall($_POST, $_FILES)) {
             Application::getApplication()->pushMessage('Ошибка добавления отзыва');
-        }else{
+        } else {
             Application::getApplication()->pushMessage('Отзыв успешно добавлен');
         }
 
@@ -39,7 +38,7 @@ class MainController extends BaseController
     {
         // Оставляем открытым сугубо для теста
         $rec = new RecallsModel();
-        if($rec->migrate()){
+        if ($rec->migrate()) {
             echo 'Successful migrated';
         }
     }

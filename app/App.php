@@ -134,18 +134,18 @@ class Application
     public function getUser()
     {
 
-        if($this->user){
+        if ($this->user) {
             return $this->user;
         }
 
-        if(!isset($_SESSION['id'])) {
+        if (!isset($_SESSION['id'])) {
             return null;
         }
 
         $userModel = new UserModel();
         $this->user = $userModel->getById($_SESSION['id']);
 
-        if(!$this->user){
+        if (!$this->user) {
             return null;
         }
 

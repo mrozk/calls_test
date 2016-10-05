@@ -1,21 +1,25 @@
 <?php
 
-class RecallsModel extends BaseModel{
+class RecallsModel extends BaseModel
+{
 
 
-    public function getRecalls($getNotApproved = false, $sort = 'date'){
+    public function getRecalls($getNotApproved = false, $sort = 'date')
+    {
 
         $query = 'SELECT * FROM recalls';
-        if(!$getNotApproved){
+        if (!$getNotApproved) {
             $query .= ' WHERE is_approved = 1';
         }
 
-        if($sort == 'name'){
+        if ($sort == 'name') {
             $field = 'name';
-        }else if($field = 'email'){
-            $field = 'email';
-        }else{
-            $field = 'id';
+        } else {
+            if ($field = 'email') {
+                $field = 'email';
+            } else {
+                $field = 'id';
+            }
         }
         $query .= ' ORDER BY ' . $field . ' DESC';
 
@@ -29,22 +33,20 @@ class RecallsModel extends BaseModel{
     }
 
 
-
-
     public function addRecall($data, $file)
     {
         $name = $this->getString($data, 'name');
         $email = $this->getString($data, 'email');
         $text = $this->getString($data, 'text');
 
-        if(empty($name) || empty($email) || empty($text)){
+        if (empty($name) || empty($email) || empty($text)) {
             return false;
         }
 
         $photo = '';
-        if(!empty($file)){
+        if (!empty($file)) {
             $photo = $this->uploadFile($file);
-            if(!$photo){
+            if (!$photo) {
                 return false;
             }
         }
@@ -55,7 +57,7 @@ class RecallsModel extends BaseModel{
             $text . '", "' .
             $photo . '")';
 
-        if($this->db->query($query)){
+        if ($this->db->query($query)) {
             return true;
         }
 
@@ -67,40 +69,48 @@ class RecallsModel extends BaseModel{
         return substr(sha1(rand()), 0, $length);
     }
 
-    function smartResizeImage($file,
-        $string             = null,
-        $width              = 0,
-        $height             = 0,
-        $proportional       = false,
-        $output             = 'file',
-        $delete_original    = true,
+    function smartResizeImage(
+        $file,
+        $string = null,
+        $width = 0,
+        $height = 0,
+        $proportional = false,
+        $output = 'file',
+        $delete_original = true,
         $use_linux_commands = false,
         $quality = 100
     ) {
 
-        if ( $height <= 0 && $width <= 0 ) return false;
-        if ( $file === null && $string === null ) return false;
+        if ($height <= 0 && $width <= 0) {
+            return false;
+        }
+        if ($file === null && $string === null) {
+            return false;
+        }
 
         # Setting defaults and meta
-        $info                         = $file !== null ? getimagesize($file) : getimagesizefromstring($string);
-        $image                        = '';
-        $final_width                  = 0;
-        $final_height                 = 0;
+        $info = $file !== null ? getimagesize($file) : getimagesizefromstring($string);
+        $image = '';
+        $final_width = 0;
+        $final_height = 0;
         list($width_old, $height_old) = $info;
         $cropHeight = $cropWidth = 0;
 
         # Calculating proportionality
         if ($proportional) {
-            if      ($width  == 0)  $factor = $height/$height_old;
-            elseif  ($height == 0)  $factor = $width/$width_old;
-            else                    $factor = min( $width / $width_old, $height / $height_old );
+            if ($width == 0) {
+                $factor = $height / $height_old;
+            } elseif ($height == 0) {
+                $factor = $width / $width_old;
+            } else {
+                $factor = min($width / $width_old, $height / $height_old);
+            }
 
-            $final_width  = round( $width_old * $factor );
-            $final_height = round( $height_old * $factor );
-        }
-        else {
-            $final_width = ( $width <= 0 ) ? $width_old : $width;
-            $final_height = ( $height <= 0 ) ? $height_old : $height;
+            $final_width = round($width_old * $factor);
+            $final_height = round($height_old * $factor);
+        } else {
+            $final_width = ($width <= 0) ? $width_old : $width;
+            $final_height = ($height <= 0) ? $height_old : $height;
             $widthX = $width_old / $width;
             $heightX = $height_old / $height;
 
@@ -110,27 +120,33 @@ class RecallsModel extends BaseModel{
         }
 
         # Loading image to memory according to type
-        switch ( $info[2] ) {
-            case IMAGETYPE_JPEG:  $file !== null ? $image = imagecreatefromjpeg($file) : $image = imagecreatefromstring($string);  break;
-            case IMAGETYPE_GIF:   $file !== null ? $image = imagecreatefromgif($file)  : $image = imagecreatefromstring($string);  break;
-            case IMAGETYPE_PNG:   $file !== null ? $image = imagecreatefrompng($file)  : $image = imagecreatefromstring($string);  break;
-            default: return false;
+        switch ($info[2]) {
+            case IMAGETYPE_JPEG:
+                $file !== null ? $image = imagecreatefromjpeg($file) : $image = imagecreatefromstring($string);
+                break;
+            case IMAGETYPE_GIF:
+                $file !== null ? $image = imagecreatefromgif($file) : $image = imagecreatefromstring($string);
+                break;
+            case IMAGETYPE_PNG:
+                $file !== null ? $image = imagecreatefrompng($file) : $image = imagecreatefromstring($string);
+                break;
+            default:
+                return false;
         }
 
 
         # This is the resizing/resampling/transparency-preserving magic
-        $image_resized = imagecreatetruecolor( $final_width, $final_height );
-        if ( ($info[2] == IMAGETYPE_GIF) || ($info[2] == IMAGETYPE_PNG) ) {
+        $image_resized = imagecreatetruecolor($final_width, $final_height);
+        if (($info[2] == IMAGETYPE_GIF) || ($info[2] == IMAGETYPE_PNG)) {
             $transparency = imagecolortransparent($image);
             $palletsize = imagecolorstotal($image);
 
             if ($transparency >= 0 && $transparency < $palletsize) {
-                $transparent_color  = imagecolorsforindex($image, $transparency);
-                $transparency       = imagecolorallocate($image_resized, $transparent_color['red'], $transparent_color['green'], $transparent_color['blue']);
+                $transparent_color = imagecolorsforindex($image, $transparency);
+                $transparency = imagecolorallocate($image_resized, $transparent_color['red'], $transparent_color['green'], $transparent_color['blue']);
                 imagefill($image_resized, 0, 0, $transparency);
                 imagecolortransparent($image_resized, $transparency);
-            }
-            elseif ($info[2] == IMAGETYPE_PNG) {
+            } elseif ($info[2] == IMAGETYPE_PNG) {
                 imagealphablending($image_resized, false);
                 $color = imagecolorallocatealpha($image_resized, 0, 0, 0, 127);
                 imagefill($image_resized, 0, 0, $color);
@@ -141,17 +157,20 @@ class RecallsModel extends BaseModel{
 
 
         # Taking care of original, if needed
-        if ( $delete_original ) {
-            if ( $use_linux_commands ) exec('rm '.$file);
-            else @unlink($file);
+        if ($delete_original) {
+            if ($use_linux_commands) {
+                exec('rm ' . $file);
+            } else {
+                @unlink($file);
+            }
         }
 
         # Preparing a method of providing result
-        switch ( strtolower($output) ) {
+        switch (strtolower($output)) {
             case 'browser':
                 $mime = image_type_to_mime_type($info[2]);
                 header("Content-type: $mime");
-                $output = NULL;
+                $output = null;
                 break;
             case 'file':
                 $output = $file;
@@ -164,14 +183,19 @@ class RecallsModel extends BaseModel{
         }
 
         # Writing image according to type to the output destination and image quality
-        switch ( $info[2] ) {
-            case IMAGETYPE_GIF:   imagegif($image_resized, $output);    break;
-            case IMAGETYPE_JPEG:  imagejpeg($image_resized, $output, $quality);   break;
+        switch ($info[2]) {
+            case IMAGETYPE_GIF:
+                imagegif($image_resized, $output);
+                break;
+            case IMAGETYPE_JPEG:
+                imagejpeg($image_resized, $output, $quality);
+                break;
             case IMAGETYPE_PNG:
-                $quality = 9 - (int)((0.9*$quality)/10.0);
+                $quality = 9 - (int)((0.9 * $quality) / 10.0);
                 imagepng($image_resized, $output, $quality);
                 break;
-            default: return false;
+            default:
+                return false;
         }
 
         return true;
@@ -182,7 +206,7 @@ class RecallsModel extends BaseModel{
     {
 
         $file = $this->getValue($file, 'file');
-        if(!$file){
+        if (!$file) {
             return false;
         }
 
@@ -195,7 +219,7 @@ class RecallsModel extends BaseModel{
             'image/png' => 'png'
         ];
 
-        if(!$tmpName || !array_key_exists($ext, $allowed)){
+        if (!$tmpName || !array_key_exists($ext, $allowed)) {
             return false;
         }
 
@@ -217,7 +241,7 @@ class RecallsModel extends BaseModel{
     public function publish($data, $value)
     {
         $id = $this->getInt($data, 'id');
-        if(!$id){
+        if (!$id) {
             return false;
         }
 
@@ -232,7 +256,7 @@ class RecallsModel extends BaseModel{
     public function getById($data)
     {
         $id = $this->getInt($data, 'id');
-        if(!$id){
+        if (!$id) {
             return null;
         }
 
@@ -240,7 +264,7 @@ class RecallsModel extends BaseModel{
         $res = $this->db->query($query);
 
         $raw = $res->fetch_assoc();
-        if(!$raw){
+        if (!$raw) {
             return null;
         }
 
@@ -254,7 +278,7 @@ class RecallsModel extends BaseModel{
         $text = $this->getString($data, 'text');
         $id = $this->getInt($data, 'id');
 
-        if(empty($name) || empty($email) || empty($text)){
+        if (empty($name) || empty($email) || empty($text)) {
             return false;
         }
 
@@ -304,8 +328,6 @@ class RecallsModel extends BaseModel{
 
         return true;
     }
-
-
 
 
 }

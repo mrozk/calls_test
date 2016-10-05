@@ -17,10 +17,10 @@ abstract class BaseController
         $this->view = new View($this->layout, $this->id);
         $path = Application::getApplication()->getPath();
         // Тянем модели
-        if(count($this->models) > 0){
-            foreach($this->models as $item){
+        if (count($this->models) > 0) {
+            foreach ($this->models as $item) {
                 $model = $path . 'models/' . $item . '.php';
-                if(!file_exists($model)){
+                if (!file_exists($model)) {
                     Application::getApplication()->end('Model not found');
                 }
                 require_once $model;

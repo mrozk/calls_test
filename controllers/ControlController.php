@@ -19,7 +19,7 @@ class ControlController extends BaseController
     {
         parent::__construct();
         $this->user = Application::getApplication()->getUser();
-        if(!$this->user){
+        if (!$this->user) {
             Application::getApplication()->redirect('index.php');
         }
     }
@@ -35,12 +35,12 @@ class ControlController extends BaseController
     }
 
 
-
-    public function updateAction(){
+    public function updateAction()
+    {
         $recalls = new RecallsModel();
-        if($recalls->update($_POST)){
+        if ($recalls->update($_POST)) {
             $message = 'ЗАпись успешно обновлена';
-        }else{
+        } else {
             $message = 'Ошибка обновления записи';
         }
         Application::getApplication()->pushMessage($message);
@@ -48,22 +48,24 @@ class ControlController extends BaseController
     }
 
 
-    public function unpublishAction(){
+    public function unpublishAction()
+    {
         $recalls = new RecallsModel();
-        if($recalls->publish($_GET, 0)){
+        if ($recalls->publish($_GET, 0)) {
             $message = 'ЗАпись успешно обновлена';
-        }else{
+        } else {
             $message = 'Ошибка обновления записи';
         }
         Application::getApplication()->pushMessage($message);
         Application::getApplication()->redirect('index.php');
     }
 
-    public function publishAction(){
+    public function publishAction()
+    {
         $recalls = new RecallsModel();
-        if($recalls->publish($_GET, 1)){
+        if ($recalls->publish($_GET, 1)) {
             $message = 'ЗАпись успешно обновлена';
-        }else{
+        } else {
             $message = 'Ошибка обновления записи';
         }
         Application::getApplication()->pushMessage($message);

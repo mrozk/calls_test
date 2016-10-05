@@ -16,7 +16,7 @@ class UserModel extends BaseModel
     {
         $res = $this->db->query('SELECT * FROM users WHERE id=' . $id);
         $raw = $res->fetch_assoc();
-        if(!$raw){
+        if (!$raw) {
             return null;
         }
 
@@ -26,17 +26,18 @@ class UserModel extends BaseModel
         return $this;
     }
 
-    public function login($data){
+    public function login($data)
+    {
         $name = $this->getString($data, 'name');
         $password = $this->getString($data, 'password');
 
-        $res = $this->db->query('SELECT * FROM users WHERE name="' . $name .'"');
+        $res = $this->db->query('SELECT * FROM users WHERE name="' . $name . '"');
         $raw = $res->fetch_assoc();
-        if(!$raw){
+        if (!$raw) {
             return false;
         }
 
-        if(!$this->checkPassword($raw['password'], $password)){
+        if (!$this->checkPassword($raw['password'], $password)) {
             return false;
         }
 
@@ -49,23 +50,26 @@ class UserModel extends BaseModel
 
     }
 
-    public function getPassword($password){
+    public function getPassword($password)
+    {
         return md5($password);
     }
 
-    public function checkPassword($password, $value){
-        if(md5($value) == $password){
+    public function checkPassword($password, $value)
+    {
+        if (md5($value) == $password) {
             return true;
         }
 
         return false;
     }
 
-    public function createUser($data){
+    public function createUser($data)
+    {
 
         $name = $this->getString($data, 'name');
         $password = $this->getString($data, 'password');
-        if(empty($name) || empty($password)){
+        if (empty($name) || empty($password)) {
             return false;
         }
 
@@ -76,7 +80,7 @@ class UserModel extends BaseModel
             $password . '")';
 
 
-        if($this->db->query($query)){
+        if ($this->db->query($query)) {
             return true;
         }
 

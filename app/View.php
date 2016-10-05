@@ -23,9 +23,10 @@ class View
     }
 
 
-    public function render($viewName, $params = [], $context = null, $layout = null){
+    public function render($viewName, $params = [], $context = null, $layout = null)
+    {
 
-        if(!$layout){
+        if (!$layout) {
             $layout = $this->layout;
         }
 
@@ -33,7 +34,7 @@ class View
         $base = Application::getApplication()->getPath();
         $layoutPath = $base . 'views/layouts/' . $layout . '.php';
 
-        if(!file_exists($layoutPath)){
+        if (!file_exists($layoutPath)) {
             $app->end('Шаблон не найден');
         }
 
@@ -47,14 +48,15 @@ class View
         return $content;
     }
 
-    public function renderAjax($viewName, $params = [], $context = null){
-        if(!$context){
+    public function renderAjax($viewName, $params = [], $context = null)
+    {
+        if (!$context) {
             $context = $this->defaultContext;
         }
         $app = Application::getApplication();
         $base = Application::getApplication()->getPath();
         $viewPath = $base . 'views/' . $context . '/' . $viewName . '.php';
-        if(!file_exists($viewPath)){
+        if (!file_exists($viewPath)) {
             $app->end('Вид не найден');
         }
         extract($params);
@@ -66,7 +68,6 @@ class View
 
         return $content;
     }
-
 
 
 }
